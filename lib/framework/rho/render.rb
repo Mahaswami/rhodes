@@ -176,9 +176,11 @@ module Rho
       localclass = Class.new(::Rho::RhoController) do
         require 'helpers/application_helper'
         include ApplicationHelper
-        require 'helpers/browser_helper'
-        include BrowserHelper
-        
+	if File.exists?('helpers/browser_helper')
+	        require 'helpers/browser_helper'
+        	include BrowserHelper
+        end
+
         def initialize(obj=nil)
           @vars = {}
           if obj
