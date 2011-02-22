@@ -18,6 +18,9 @@
 
 #include "NativeBar.h"
 
+#import "AdWhirlView.h"
+#import "AdWhirlView+.h"
+
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "SimpleMainView"
 
@@ -66,6 +69,7 @@ int rho_sys_get_screen_height();
 
 @synthesize webView, toolbar, navbar, nativeViewType, nativeViewView, mTabBarCallback, urlBasedNativeView, url_after_set_background, isBackgroundSetted, is_url_after_set_background_redirect;
 
+@synthesize adView;
 
 static BOOL makeHiddenUntilLoadContent = YES;
 
@@ -344,7 +348,10 @@ static BOOL makeHiddenUntilLoadContent = YES;
     assert(webView && [webView retainCount] == 1);
     
 	CGRect wFrame = frame;
-    wFrame.origin.y = 0;
+    //wFrame.origin.y = 0;
+    wFrame.origin.y = 50;
+    wFrame.origin.x = 0;
+    wFrame.size.height = 410;
     webView.frame = wFrame;
     
     webView.autoresizesSubviews = YES;
@@ -540,6 +547,11 @@ static BOOL makeHiddenUntilLoadContent = YES;
 	}
 	assert(!nativeView || [nativeView retainCount] == 2);
 	assert(!webView || [webView retainCount] == 2);
+
+	self.adView = [AdWhirlView requestAdWhirlViewWithDelegate:self];
+	self.adView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin|UIViewAutoresizingFlexibleRightMargin;
+	[root addSubview:self.adView];	
+	
     if (toolbar)
         [root addSubview:toolbar];
     assert(!toolbar || [toolbar retainCount] == 2);
@@ -1051,6 +1063,71 @@ static BOOL makeHiddenUntilLoadContent = YES;
 	if (self.mTabBarCallback != nil) {
 		TabbedMainView* tv = (TabbedMainView*)self.mTabBarCallback;
 		[tv onViewWillActivate:self];
+	}
+}
+
+
+- (void)adWhirlDidReceiveAd:(AdWhirlView *)adWhirlView { 
+	[UIView beginAnimations:@"AdResize" context:nil]; 
+	[UIView setAnimationDuration:0.7]; 
+	CGSize adSize = [adView actualAdSize];
+	CGRect newFrame = adView.frame; 
+	newFrame.size.height = adSize.height; // fit the ad 
+	newFrame.size.width = adSize.width; 
+	newFrame.origin.x = (self.view.bounds.size.width - adSize.width)/2; // center
+	newFrame.origin.y = 0;
+	adView.frame = newFrame; // ... adjust surrounding views here ... 
+	[UIView commitAnimations];
+}
+
+#pragma mark AdWhirlDelegate methods
+
+- (NSString *)adWhirlApplicationKey {
+	NSString *adWhirlKey = [self getPropertyValue:@"adwhirl_application_key"];
+	if (adWhirlKey == NULL) {
+		NSLog(@"ERROR: AdWhirlKey is not defined!!!");
+		return @"";
+	} else {
+		return adWhirlKey;
+	}
+}
+
+- (NSString *)getPropertyValue:(NSString *)propertyName {
+	NSLog(@"GET PROPERTY VALUE CALLED for %@", propertyName);
+	NSString *propertyValue = NULL;
+	NSString *rhoConfigFile = [[AppManager getApplicationsRootPath] stringByAppendingPathComponent:@"rhoconfig.txt"];
+	NSLog(@"Property File Name = %@", rhoConfigFile);
+	NSString *contents = [NSString stringWithContentsOfFile:rhoConfigFile encoding:NSASCIIStringEncoding error:nil];
+	NSArray *arrayOfLines = [contents componentsSeparatedByString:@"\n"];
+	for (NSString *line in arrayOfLines) {
+		NSArray *components = [line componentsSeparatedByString:@"="];
+		if ([components count] > 1) {
+			NSString *property = [components objectAtIndex:0];
+			property = [property stringByTrimmingCharactersInSet: [NSCharacterSet whitespaceAndNewlineCharacterSet]];
+			if ([property isEqualToString: propertyName]) {
+				propertyValue = [components objectAtIndex:1];
+				propertyValue = [propertyValue stringByTrimmingCharactersInSet: [NSCharacterSet whitespaceAndNewlineCharacterSet]];
+				NSLog(@"Property Name = %@, Property Value = %@", propertyName, propertyValue);
+				break;
+			}
+		}
+		
+	}
+	return propertyValue;
+}
+
+- (UIViewController *)viewControllerForPresentingModalView {
+	return self;
+}
+
+- (BOOL)adWhirlTestMode {
+	NSString *test_mode = [self getPropertyValue:@"adwhirl_test_mode"];
+	if (test_mode == NULL || [test_mode isEqualToString:@"0"]) {
+		NSLog(@"AdWhirl TEST Mode is OFF");
+		return NO;
+	} else {
+		NSLog(@"AdWhirl TEST Mode is ON");
+		return YES;
 	}
 }
 
