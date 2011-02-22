@@ -1,0 +1,117 @@
+Millennial Media
+iPhone/iPad/iPod Touch Advertising SDK
+
+Thanks for joining mmDev and becoming a Millennial Media Publisher! Included here are all the resources for integrating Millennial Media Advertising 
+into your iPhone/iPod Touch or iPad application.
+
+You can refer to our documentation at http://wiki.millennialmedia.com/index.php/IPhone_SDK or get 
+support by contacting us at mmdevsupport@millennialmedia.com
+
+START HERE
+-------------------------------------
+There are two versions of libMMSDK.a included in this archive.
+1) MMSDK/libMMSDK.a is a Fat binary build that includes the Medialets SDK as well as SBJSON
+2) MMSDK_Split_Libraries/libMMSDK.a contains our SDK with the Medialets SDK weak linked. MMSDK_Split_Libraries/JSON includes the implementation files for
+   SBJSON. The Medialets SDK is MMSDK_Split_Libraries/Medialets/.
+   This version requires you to include libMMSDK.a, the Medialets directory (if it's not already in your project), and the JSON directory (if it's not
+   already in your project).
+
+
+Getting Started
+-------------------------------------
+1) Open your application in Xcode. 
+2) Drag the libMMSDK.a file into the XCode project and drop it over the Frameworks folder.
+3) A dialog box will pop up; make sure that the "Copy items into destination group’s folder" and "Add To Targets" options are checked.
+The library file will be automatically added inside "Targets => <project name> => Link Binary With Libraries section" as well.
+
+4) From the finder, drag the MMAdView.h header file into the XCode project, and drop it over the Classes folder.
+5) A dialog will pop up; make sure that the "Copy items into destination group’s folder" is checked as well as the "Add To Targets" option.
+In your application Delegate implementation file, normally called “ProjectNameAppDelegate.m”, import the MMAdView.h header.
+6) Add the following frameworks to your application:
+AudioToolbox, CoreLocation, SystemConfiguration, libsqlite3.0, MediaPlayer, QuartzCore, CoreGraphics, UIKit, Foundation
+To add these frameworks, select the "Frameworks" folder on the left hand side of XCode, right click and select Add-> Existing Frameworks. 
+Hold down the command key to select multiple frameworks and then click add.
+
+Instantiate the MMAdView
+------------------------------------
+Create an instance of the MMAdView class, utilizing the following method:
++ (MMAdView *) adWithType:(MMAdType) type apid: (NSString *) apid delegate: (id<MMAdDelegate>)delegate;
+
+The following is a code example of instantiating an MMAdView Top Placement:
+MMAdView *adTop = [MMAdView adWithFrame:CGRectMake(0,0,320,53) type:MMBannerAdTop apid:@"15062" delegate:self];
+
+The following is a code example of instantiating an MMAdView Bottom Placement:
+MMAdView *adBottom = [MMAdView adWithFrame:CGRectMake(0,427,320,53) type:MMBannerAdBottom apid:@"15062" delegate:self];
+
+The following is a code example of instantiating an MMAdView Full Page Launch Screen Interstitial Placement:
+MMAdView *adLaunch = [MMAdView adWithFrame:CGRectMake(0,0,0,0) type:MMFullScreenAdLaunch apid:@"15062" delegate:self];
+
+The following is a code example of instantiating an MMAdView Full Page Transition Screen Interstitial Placement:
+MMAdView *adTransition = [MMAdView adWithFrame:CGRectMake(0,0,0,0) type:MMFullScreenAdTransition apid:@"15062" delegate:self];
+
+Passing Metadata
+-----------------------------------
+By adding a few lines to your code, you can provide age, gender, zip code, lat/long or other information that you’ve gathered about your users to help provide the most relevant ads. This can be done by simply utilizing the following method that returns a NSDictionary.
+- (NSDictionary *) requestData;
+The following is an example of inputting meta values into the ad request with the above mentioned method.
+- (NSDictionary *) requestData {
+    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys: 
+                                   @"21224", @"zip", 
+                                   @"35", @"age",
+                                   @"male", @"gender",
+                                   @"32.678, @"lat",
+                                   @"-101.678, @"long",
+                                   nil];
+	return params;
+}
+
+
+Notable Delegate Methods
+------------------------------------
+The following delegate methods are available to the developer to help control their application in a more useful way.
+//provides feedback to the devleoper when a successful ad call was generated
+- (void)adRequestSucceeded:(MMAdView *) adView;
+
+//provides feedback to the developer when a failed ad call was generated
+- (void)adRequestFailed:(MMAdView *) adView;
+
+//provides feedback to the developer that the ad did refresh
+- (void)adDidRefresh:(MMAdView *)adView;
+
+//Called when app was tapped and overlayed
+- (void)adWasTapped: (MMAdView *) adView;
+
+//provides feedback to the developer when the modal will appear
+- (void)adModalWillAppear;
+
+//provides feedback to the developer when the modal did appear
+- (void)adModalDidAppear;
+
+//provides feedback to the developer when the modal was dismissed by the user
+- (void)adModalWasDismissed;
+
+//Use this method to enable ad refreshing.
+- (void)enableAdRefresh;
+
+//Use this method to disable ad refreshing.
+- (void)disableAdRefresh;
+
+Conversion Tracking
+----------------------------------
+You can use our conversion tracker by simply calling the following method.
+MMAdView *adView = [MMAdView adWithFrame:CGRectMake(0,0,320,53) type:MMBannerAdTop apid:@"15062" delegate:self];
+[adView startConversionTrackerWithGoalId:@"YOUR_GOAL_ID"];
+
+
+Releasing MMAdView
+----------------------------------
+
+MMAdView *adView = [MMAdView adWithFrame:CGRectMake(0,0,320,53) type:MMBannerAdTop apid:@"15062" delegate:self];
+[adView disableAdRefresh];
+[adView release];
+
+
+Code Example
+----------------------------------
+Please refer to the code sample in the download package for an example on how to instantiate and place the MMAdView on the screen.
+

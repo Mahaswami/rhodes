@@ -1,0 +1,37 @@
+Changelog
+----------------------------------
+Version 4.0.4 - 9/23/2010
+Fixed issue preventing Medialets ads from being properly displayed
+
+Version 4.0.3 - 9/20/2010
+Fixed bug preventing some videos from being cached
+
+Version 4.0.2 - 9/16/2010
+Improved method for presenting new ad types
+
+Version 4.0.1 - 9/9/2010
+Fixed bug causing crash due to over releasing internal objects. Updated sample projects for XCode 3.2.4 and iOS 4.1.
+
+Version 4.0 - 9/8/2010
+Updated with an all new structure that provides Millennial with a greater flexibility in serving ads. iOS 4.0/3.2 compatible only.
+
+Version 3.5.8 - 6/29/2010
+Close overlay before exiting to open app store or maps.
+
+Version 3.5.7 - 6/16/2010 
+Updated for iOS 4.0 comptability
+
+Version 3.5.6 - 5/26/2010
+Improved launch speed of modal overlay
+
+Version 3.5.5 - 5/13/2010
+Fixed accelerometer bug causing a EXC_BAD_ACCESS error
+Fixed NSURLConnection crashing bug
+
+Version 3.5.4 - 5/4/2010
+Added function to let developers turn off accelerometer support to the SDK.
+Fixed allocation/release bug causing some ad view to continue living
+
+Version 3.5.3 - 4/19/2010
+
+Version 3.5.2 - 4/9/2010
