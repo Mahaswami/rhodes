@@ -884,3 +884,5 @@ namespace "device" do
   end
 
 end
+
+load "#{File.expand_path(File.dirname(__FILE__))}/iphone_custom.rake"
